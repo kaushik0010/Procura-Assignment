@@ -2,14 +2,13 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:14
     container_name: postgres
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: procura_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=procura_db
     ports:
       - '5432:5432'
     volumes:
@@ -17,7 +16,29 @@ services:
     networks:
       - app_net
 
-  # Products Microservice
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.nest
+      args:
+        APP_NAME: api-gateway
+    container_name: api-gateway
+    ports:
+      - '3000:3000'
+    environment:
+      - JWT_SECRET=a-very-secret-and-long-key-that-is-secure
+    # --- Additions for Hot-Reloading ---
+    command: npm run start:dev api-gateway # Runs the dev server
+    volumes:
+      - .:/usr/src/app                   # Syncs all files
+      - /usr/src/app/node_modules        # Excludes node_modules from sync
+    # -----------------------------------
+    depends_on:
+      - products-service
+      - orders-service
+    networks:
+      - app_net
+
   products-service:
     build:
       context: .
@@ -31,28 +52,17 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=procura_db
+    # --- Additions for Hot-Reloading ---
+    command: npm run start:dev products-service
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    # -----------------------------------
     depends_on:
       - postgres
     networks:
       - app_net
 
-  api-gateway:
-    build:
-      context: .
-      dockerfile: Dockerfile.nest
-      args:
-        APP_NAME: api-gateway
-    container_name: api-gateway
-    environment:
-      - JWT_SECRET=a-very-secret-and-long-key-that-is-secure
-    ports:
-      - '3000:3000' # Expose the gateway to the host
-    depends_on:
-      - products-service
-      - orders-service
-    networks:
-      - app_net
-    
   orders-service:
     build:
       context: .
@@ -66,9 +76,32 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=procura_db
+    # --- Additions for Hot-Reloading ---
+    command: npm run start:dev orders-service
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    # -----------------------------------
     depends_on:
       - postgres
       - products-service
+    networks:
+      - app_net
+  
+  web-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.next
+    container_name: web-client
+    ports:
+      - '4200:4200'
+    # --- Additions for Hot-Reloading ---
+    volumes:
+      - ./web-client:/usr/src/app # Sync only the web-client folder
+      - /usr/src/app/node_modules
+    # -----------------------------------
+    depends_on:
+      - api-gateway
     networks:
       - app_net
 
