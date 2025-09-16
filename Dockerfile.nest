@@ -1,0 +1,20 @@
+# Dockerfile.nest
+# STAGE 1: Build
+FROM node:18-alpine AS builder
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+COPY . .
+# Replace 'your-app-name' with a placeholder that we will pass in
+ARG APP_NAME
+RUN npx nx build ${APP_NAME} --prod
+
+# STAGE 2: Production
+FROM node:18-alpine
+WORKDIR /usr/src/app
+# Copy only necessary files from the builder stage
+COPY --from=builder /usr/src/app/dist/apps/${APP_NAME} ./
+COPY package*.json ./
+# Install only production dependencies
+RUN npm install --omit=dev
+CMD ["node", "main.js"]
