@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import {ClientsModule, Transport} from '@nestjs/microservices'
 import { ProductsController } from './products.controller';
 import { OrdersController } from './orders.controller';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     ClientsModule.register([
       {
         name: 'PRODUCTS_SERVICE',

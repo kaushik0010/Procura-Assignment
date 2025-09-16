@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Inject, UseGuards } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateOrderDto } from '@procura-app/common';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @ApiTags('orders')
 @Controller('orders')
 export class OrdersController {

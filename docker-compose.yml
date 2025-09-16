@@ -43,6 +43,8 @@ services:
       args:
         APP_NAME: api-gateway
     container_name: api-gateway
+    environment:
+      - JWT_SECRET=a-very-secret-and-long-key-that-is-secure
     ports:
       - '3000:3000' # Expose the gateway to the host
     depends_on:

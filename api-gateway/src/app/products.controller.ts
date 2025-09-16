@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger'
 import { ClientProxy } from '@nestjs/microservices';
 import {CreateProductDto} from '@procura-app/common'
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
