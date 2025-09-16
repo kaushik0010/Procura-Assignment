@@ -47,6 +47,26 @@ services:
       - '3000:3000' # Expose the gateway to the host
     depends_on:
       - products-service
+      - orders-service
+    networks:
+      - app_net
+    
+  orders-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.nest
+      args:
+        APP_NAME: orders-service
+    container_name: orders-service
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=procura_db
+    depends_on:
+      - postgres
+      - products-service
     networks:
       - app_net
 
