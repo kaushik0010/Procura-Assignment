@@ -1,10 +1,20 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import {ClientsModule, Transport} from '@nestjs/microservices'
+import { ProductsController } from './products.controller';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ClientsModule.register([
+      {
+        name: 'PRODUCTS_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: 'products-service', // Docker service name
+          port: 3001,
+        },
+      },
+    ]),
+  ],
+  controllers: [ProductsController],
 })
 export class AppModule {}

@@ -36,6 +36,20 @@ services:
     networks:
       - app_net
 
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.nest
+      args:
+        APP_NAME: api-gateway
+    container_name: api-gateway
+    ports:
+      - '3000:3000' # Expose the gateway to the host
+    depends_on:
+      - products-service
+    networks:
+      - app_net
+
 volumes:
   postgres_data:
 
