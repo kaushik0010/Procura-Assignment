@@ -1,5 +1,4 @@
 # docker-compose.yml
-version: '3.8'
 
 services:
   postgres:
@@ -27,12 +26,10 @@ services:
       - '3000:3000'
     environment:
       - JWT_SECRET=a-very-secret-and-long-key-that-is-secure
-    # --- Additions for Hot-Reloading ---
-    command: npm run start:dev api-gateway # Runs the dev server
+    command: npm run start:dev api-gateway
     volumes:
-      - .:/usr/src/app                   # Syncs all files
-      - /usr/src/app/node_modules        # Excludes node_modules from sync
-    # -----------------------------------
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     depends_on:
       - products-service
       - orders-service
@@ -52,12 +49,10 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=procura_db
-    # --- Additions for Hot-Reloading ---
     command: npm run start:dev products-service
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    # -----------------------------------
     depends_on:
       - postgres
     networks:
@@ -76,18 +71,16 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=procura_db
-    # --- Additions for Hot-Reloading ---
     command: npm run start:dev orders-service
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    # -----------------------------------
     depends_on:
       - postgres
       - products-service
     networks:
       - app_net
-  
+
   web-client:
     build:
       context: .
@@ -95,11 +88,9 @@ services:
     container_name: web-client
     ports:
       - '4200:4200'
-    # --- Additions for Hot-Reloading ---
     volumes:
-      - ./web-client:/usr/src/app # Sync only the web-client folder
+      - ./web-client:/usr/src/app
       - /usr/src/app/node_modules
-    # -----------------------------------
     depends_on:
       - api-gateway
     networks:
@@ -107,6 +98,7 @@ services:
 
 volumes:
   postgres_data:
+
 
 networks:
   app_net:

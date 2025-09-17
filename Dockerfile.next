@@ -1,6 +1,7 @@
 # Dockerfile.next
+
 # STAGE 1: Build
-FROM node:18-alpine AS builder
+FROM node:20 AS builder
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
@@ -8,13 +9,11 @@ COPY . .
 RUN npx nx build web-client --prod
 
 # STAGE 2: Production
-FROM node:18-alpine
+FROM node:20
 WORKDIR /usr/src/app
-
-# Copy built app from builder stage
-COPY --from=builder /usr/src/app/dist/apps/web-client ./
+# Corrected path for your project structure
+COPY --from=builder /usr/src/app/dist/web-client ./
 COPY package*.json ./
 RUN npm install --omit=dev
-
 EXPOSE 4200
 CMD ["node", "./server/main.js"]

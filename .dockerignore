@@ -1,0 +1,23 @@
+# Git and node dependencies
+.git
+node_modules
+
+# Build artifacts and cache from Nx
+dist
+tmp
+.nx/cache
+
+# Local environment files (should be injected at runtime, not built into the image)
+.env
+.env.*
+!/.env.example
+
+# Log files and OS-specific files
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# IDE and editor configuration
+.vscode
+.idea
